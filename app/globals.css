@@ -1,0 +1,248 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f7f5f1;
+  color: #1f1f1f;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 18px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  max-width: 680px;
+  margin: 0 auto;
+  color: #555;
+  font-size: 18px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+}
+
+.centered {
+  text-align: center;
+}
+
+.steps {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.steps span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eee;
+  font-size: 13px;
+}
+
+.steps .active {
+  background: #1f1f1f;
+  color: white;
+}
+
+h2 {
+  font-size: 28px;
+  margin-top: 0;
+}
+
+h3 {
+  margin-top: 26px;
+}
+
+.muted {
+  color: #666;
+  line-height: 1.5;
+}
+
+.success {
+  color: #217a3c;
+  font-weight: bold;
+}
+
+.notice {
+  background: #f3efe7;
+  padding: 14px;
+  border-radius: 12px;
+  margin: 18px 0;
+  line-height: 1.5;
+}
+
+.field {
+  display: block;
+  margin: 18px 0;
+  font-weight: bold;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.field textarea {
+  min-height: 120px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.option,
+.layout {
+  border: 1px solid #ddd;
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s;
+}
+
+.option:hover,
+.layout:hover {
+  border-color: #1f1f1f;
+}
+
+.option.selected,
+.layout.selected,
+.concept.selected {
+  border-color: #1f1f1f;
+  background: #f3efe7;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.layoutIcon {
+  width: 52px;
+  height: 52px;
+  background: #1f1f1f;
+  color: white;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.layout small {
+  color: #666;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.button,
+.secondary {
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.button {
+  background: #1f1f1f;
+  color: white;
+}
+
+.button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: #eeeeee;
+  color: #1f1f1f;
+}
+
+.full {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.conceptGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 18px;
+}
+
+.concept {
+  border: 2px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.concept img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.concept p {
+  color: #555;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .button,
+  .secondary {
+    width: 100%;
+  }
+}
