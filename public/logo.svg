@@ -1,0 +1,8 @@
+<svg width="400" height="108" viewBox="0 0 400 108" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">Kerr's Kitchens and Cabinets logo</title>
+  <desc id="logoDesc">Logo for Kerr's Kitchens and Cabinets Cabinetry Visualiser</desc>
+  <rect width="400" height="108" fill="#F7F5F0" />
+  <rect x="0" y="80" width="400" height="28" fill="#F7941D" opacity="0.92" />
+  <text x="20" y="42" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#231F20">Kerr's Kitchens</text>
+  <text x="20" y="72" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#231F20">& Cabinets Cabinetry Visualiser</text>
+</svg>

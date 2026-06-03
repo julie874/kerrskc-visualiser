@@ -390,10 +390,15 @@ export default function Home() {
   return (
     <main className="container">
       <header className="hero">
-        <h1>AI Cabinetry Visualiser</h1>
+        <img
+          src="/logo.svg"
+          alt="Kerr's Kitchens and Cabinets logo"
+          className="hero-logo"
+        />
+        <h1>Kerr's Kitchens and Cabinets Cabinetry Visualiser</h1>
         <p>
           Upload a photo of your kitchen, laundry, wardrobe or living area and
-          receive AI-generated cabinetry concepts.
+          receive cabinetry concept ideas tailored to your space.
         </p>
         <p className="muted">Version: image compression active v1</p>
       </header>

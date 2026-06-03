@@ -33,6 +33,13 @@ body {
   margin-bottom: 28px;
 }
 
+.hero-logo {
+  width: 170px;
+  max-width: 100%;
+  margin: 0 auto 18px;
+  display: block;
+}
+
 .hero h1 {
   font-size: 42px;
   margin-bottom: 12px;
@@ -142,7 +149,7 @@ h3 {
 
 .option:hover,
 .layout:hover {
-  border-color: #1f1f1f;
+  border-color: var(--accent-blue);
 }
 
 .option.selected,
@@ -167,7 +174,7 @@ h3 {
 .layoutIcon {
   width: 52px;
   height: 52px;
-  background: var(--text-primary);
+  background: var(--accent-blue);
   color: var(--surface);
   border-radius: 14px;
   display: flex;
@@ -202,18 +209,18 @@ h3 {
 }
 
 .button {
-  background: var(--text-primary);
+  background: var(--accent-orange);
   color: var(--surface);
 }
 
 .button:disabled {
-  background: #999;
+  background: #c7bba8;
   cursor: not-allowed;
 }
 
 .secondary {
-  background: #eeeeee;
-  color: #1f1f1f;
+  background: var(--panel-soft-blue);
+  color: var(--text-primary);
 }
 
 .full {
@@ -228,7 +235,7 @@ h3 {
 }
 
 .concept {
-  border: 2px solid #eee;
+  border: 2px solid var(--border-color);
   border-radius: 16px;
   padding: 14px;
 }
@@ -241,7 +248,7 @@ h3 {
 }
 
 .concept p {
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
