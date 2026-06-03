@@ -153,6 +153,81 @@ async function compressImageFile(file: File): Promise<File> {
     type: "image/jpeg"
   });
 }
+async function compressImageFile(file: File): Promise<File> {
+  const maxOriginalSizeMb = 25;
+  const maxOriginalSizeBytes = maxOriginalSizeMb * 1024 * 1024;
+
+  if (file.size > maxOriginalSizeBytes) {
+    throw new Error(`Please upload an image smaller than ${maxOriginalSizeMb}MB.`);
+  }
+
+  const imageBitmap = await createImageBitmap(file);
+
+  const maxDimension = 900;
+  let width = imageBitmap.width;
+  let height = imageBitmap.height;
+
+  if (width > height && width > maxDimension) {
+    height = Math.round((height * maxDimension) / width);
+    width = maxDimension;
+  } else if (height > width && height > maxDimension) {
+    width = Math.round((width * maxDimension) / height);
+    height = maxDimension;
+  } else if (width === height && width > maxDimension) {
+    width = maxDimension;
+    height = maxDimension;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    throw new Error("Could not process image. Please try another photo.");
+  }
+
+  ctx.drawImage(imageBitmap, 0, 0, width, height);
+
+  const qualities = [0.75, 0.6, 0.45, 0.35];
+  const maxFinalSizeBytes = 900 * 1024;
+
+  let finalBlob: Blob | null = null;
+
+  for (const quality of qualities) {
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", quality);
+    });
+
+    if (!blob) {
+      continue;
+    }
+
+    finalBlob = blob;
+
+    if (blob.size <= maxFinalSizeBytes) {
+      break;
+    }
+  }
+
+  if (!finalBlob) {
+    throw new Error("Could not compress image. Please try another photo.");
+  }
+
+  if (finalBlob.size > maxFinalSizeBytes) {
+    throw new Error(
+      "This image is still too large after compression. Please try a smaller or lower-resolution photo."
+    );
+  }
+
+  const compressedFileName =
+    file.name.replace(/\.(png|jpg|jpeg)$/i, "") + "-compressed.jpg";
+
+  return new File([finalBlob], compressedFileName, {
+    type: "image/jpeg"
+  });
+}
 type Concept = {
   id: string;
   imageUrl: string;
@@ -190,6 +265,39 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  async function handlePhotoUpload(file: File | null) {
+  if (!file) {
+    setPhoto(null);
+    return;
+  }
+
+  const allowedTypes = ["image/jpeg", "image/png"];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Please upload a JPEG, JPG or PNG image.");
+    setPhoto(null);
+    return;
+  }
+
+  setIsCompressing(true);
+
+  try {
+    const compressedFile = await compressImageFile(file);
+    setPhoto(compressedFile);
+  } catch (error) {
+    console.error(error);
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Could not process this image. Please try another photo.";
+
+    alert(message);
+    setPhoto(null);
+  } finally {
+    setIsCompressing(false);
+  }
+}
   function toggleValue(
     value: string,
     list: string[],
@@ -202,31 +310,6 @@ export default function Home() {
     }
   }
 
-  function handlePhotoUpload(file: File | null) {
-    if (!file) {
-      setPhoto(null);
-      return;
-    }
-
-    const allowedTypes = ["image/jpeg", "image/png"];
-
-    if (!allowedTypes.includes(file.type)) {
-      alert("Please upload a JPEG, JPG or PNG image.");
-      setPhoto(null);
-      return;
-    }
-
-    const maxSizeMb = 12;
-    const maxSizeBytes = maxSizeMb * 1024 * 1024;
-
-    if (file.size > maxSizeBytes) {
-      alert(`Please upload an image smaller than ${maxSizeMb}MB.`);
-      setPhoto(null);
-      return;
-    }
-
-    setPhoto(file);
-  }
 
   async function generateConcepts() {
     if (!photo) {
