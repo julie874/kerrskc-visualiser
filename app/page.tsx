@@ -78,7 +78,68 @@ const installExpectations = [
   "6–12 months",
   "12 months+"
 ];
+async function compressImageFile(file: File): Promise<File> {
+  const maxOriginalSizeMb = 20;
+  const maxOriginalSizeBytes = maxOriginalSizeMb * 1024 * 1024;
 
+  if (file.size > maxOriginalSizeBytes) {
+    throw new Error(`Please upload an image smaller than ${maxOriginalSizeMb}MB.`);
+  }
+
+  const imageBitmap = await createImageBitmap(file);
+
+  const maxDimension = 1600;
+  let { width, height } = imageBitmap;
+
+  if (width > height && width > maxDimension) {
+    height = Math.round((height * maxDimension) / width);
+    width = maxDimension;
+  } else if (height > width && height > maxDimension) {
+    width = Math.round((width * maxDimension) / height);
+    height = maxDimension;
+  } else if (width === height && width > maxDimension) {
+    width = maxDimension;
+    height = maxDimension;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    throw new Error("Could not process image. Please try another photo.");
+  }
+
+  ctx.drawImage(imageBitmap, 0, 0, width, height);
+
+  const qualities = [0.82, 0.72, 0.62];
+
+  for (const quality of qualities) {
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", quality);
+    });
+
+    if (!blob) {
+      continue;
+    }
+
+    const maxFinalSizeBytes = 3.5 * 1024 * 1024;
+
+    if (blob.size <= maxFinalSizeBytes || quality === qualities[qualities.length - 1]) {
+      return new File(
+        [blob],
+        file.name.replace(/\.(png|jpg|jpeg)$/i, "") + "-compressed.jpg",
+        {
+          type: "image/jpeg"
+        }
+      );
+    }
+  }
+
+  throw new Error("Could not compress image. Please try a smaller or clearer photo.");
+}
 type Concept = {
   id: string;
   imageUrl: string;
@@ -334,13 +395,23 @@ export default function Home() {
             <label className="field">
               Upload photo
               <input
-                type="file"
-                accept="image/jpeg,image/png"
-                onChange={(e) => handlePhotoUpload(e.target.files?.[0] || null)}
-              />
+  type="file"
+  accept="image/jpeg,image/png"
+  onChange={(e) => {
+    void handlePhotoUpload(e.target.files?.[0] || null);
+  }}
+/>
             </label>
 
-            {photo && <p className="success">Selected: {photo.name}</p>}
+            {isCompressing && (
+  <p className="muted">Optimising image for upload...</p>
+)}
+
+{photo && !isCompressing && (
+  <p className="success">
+    Selected: {photo.name} ({(photo.size / 1024 / 1024).toFixed(2)}MB)
+  </p>
+)}
 
             <div className="notice">
               Your uploaded photo and generated concept images will be stored
@@ -350,12 +421,12 @@ export default function Home() {
             </div>
 
             <button
-              className="button"
-              onClick={() => setStep(2)}
-              disabled={!photo}
-            >
-              Continue
-            </button>
+  className="button"
+  onClick={() => setStep(2)}
+  disabled={!photo || isCompressing}
+>
+  {isCompressing ? "Preparing image..." : "Continue"}
+</button>
           </>
         )}
 
