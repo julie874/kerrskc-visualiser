@@ -2,10 +2,23 @@
   box-sizing: border-box;
 }
 
+:root {
+  --background: #F7F5F0;
+  --text-primary: #231F20;
+  --text-secondary: #666;
+  --accent-orange: #F7941D;
+  --accent-green: #8DC63F;
+  --accent-blue: #6AA9D8;
+  --panel-soft-blue: #EAF6FB;
+  --panel-soft-peach: #FAEEE8;
+  --border-color: #D8D4CC;
+  --surface: #ffffff;
+}
+
 body {
   margin: 0;
-  background: #f7f5f1;
-  color: #1f1f1f;
+  background: var(--background);
+  color: var(--text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -28,12 +41,12 @@ body {
 .hero p {
   max-width: 680px;
   margin: 0 auto;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 18px;
 }
 
 .card {
-  background: #ffffff;
+  background: var(--surface);
   border-radius: 18px;
   padding: 28px;
   box-shadow: 0 12px 40px rgba(0,0,0,0.08);
@@ -53,13 +66,13 @@ body {
 .steps span {
   padding: 8px 12px;
   border-radius: 999px;
-  background: #eee;
+  background: var(--panel-soft-blue);
   font-size: 13px;
 }
 
 .steps .active {
-  background: #1f1f1f;
-  color: white;
+  background: var(--accent-blue);
+  color: var(--surface);
 }
 
 h2 {
@@ -72,17 +85,17 @@ h3 {
 }
 
 .muted {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .success {
-  color: #217a3c;
+  color: var(--accent-green);
   font-weight: bold;
 }
 
 .notice {
-  background: #f3efe7;
+  background: var(--panel-soft-peach);
   padding: 14px;
   border-radius: 12px;
   margin: 18px 0;
@@ -101,7 +114,7 @@ h3 {
   width: 100%;
   margin-top: 8px;
   padding: 13px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 15px;
 }
@@ -118,8 +131,8 @@ h3 {
 
 .option,
 .layout {
-  border: 1px solid #ddd;
-  background: #fafafa;
+  border: 1px solid var(--border-color);
+  background: var(--panel-soft-blue);
   border-radius: 14px;
   padding: 16px;
   cursor: pointer;
@@ -135,8 +148,8 @@ h3 {
 .option.selected,
 .layout.selected,
 .concept.selected {
-  border-color: #1f1f1f;
-  background: #f3efe7;
+  border-color: var(--accent-blue);
+  background: var(--panel-soft-peach);
 }
 
 .layoutGrid {
@@ -154,8 +167,8 @@ h3 {
 .layoutIcon {
   width: 52px;
   height: 52px;
-  background: #1f1f1f;
-  color: white;
+  background: var(--text-primary);
+  color: var(--surface);
   border-radius: 14px;
   display: flex;
   align-items: center;
@@ -189,8 +202,8 @@ h3 {
 }
 
 .button {
-  background: #1f1f1f;
-  color: white;
+  background: var(--text-primary);
+  color: var(--surface);
 }
 
 .button:disabled {
@@ -246,3 +259,5 @@ h3 {
     width: 100%;
   }
 }
+
+
