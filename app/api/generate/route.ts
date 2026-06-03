@@ -143,7 +143,7 @@ Generate a high-quality inspirational cabinetry visual suitable for a cabinet ma
 
     const concepts = [];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 1; i++) {
       const imageFile = new File([buffer], safeName, { type: photo.type });
 
       const imageResult = await openai.images.edit({
