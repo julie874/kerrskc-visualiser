@@ -78,87 +78,15 @@ const installExpectations = [
   "6–12 months",
   "12 months+"
 ];
+
 async function compressImageFile(file: File): Promise<File> {
   const maxOriginalSizeMb = 25;
   const maxOriginalSizeBytes = maxOriginalSizeMb * 1024 * 1024;
 
   if (file.size > maxOriginalSizeBytes) {
-    throw new Error(`Please upload an image smaller than ${maxOriginalSizeMb}MB.`);
-  }
-
-  const imageBitmap = await createImageBitmap(file);
-
-  const maxDimension = 1200;
-  let width = imageBitmap.width;
-  let height = imageBitmap.height;
-
-  if (width > height && width > maxDimension) {
-    height = Math.round((height * maxDimension) / width);
-    width = maxDimension;
-  } else if (height > width && height > maxDimension) {
-    width = Math.round((width * maxDimension) / height);
-    height = maxDimension;
-  } else if (width === height && width > maxDimension) {
-    width = maxDimension;
-    height = maxDimension;
-  }
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    throw new Error("Could not process image. Please try another photo.");
-  }
-
-  ctx.drawImage(imageBitmap, 0, 0, width, height);
-
-  const qualities = [0.75, 0.6, 0.45, 0.35];
-  const maxFinalSizeBytes = 2 * 1024 * 1024;
-
-  let finalBlob: Blob | null = null;
-
-  for (const quality of qualities) {
-    const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, "image/jpeg", quality);
-    });
-
-    if (!blob) {
-      continue;
-    }
-
-    finalBlob = blob;
-
-    if (blob.size <= maxFinalSizeBytes) {
-      break;
-    }
-  }
-
-  if (!finalBlob) {
-    throw new Error("Could not compress image. Please try another photo.");
-  }
-
-  if (finalBlob.size > maxFinalSizeBytes) {
     throw new Error(
-      "This image is still too large after compression. Please try a smaller or lower-resolution photo."
+      `Please upload an image smaller than ${maxOriginalSizeMb}MB.`
     );
-  }
-
-  const compressedFileName =
-    file.name.replace(/\.(png|jpg|jpeg)$/i, "") + "-compressed.jpg";
-
-  return new File([finalBlob], compressedFileName, {
-    type: "image/jpeg"
-  });
-}
-async function compressImageFile(file: File): Promise<File> {
-  const maxOriginalSizeMb = 25;
-  const maxOriginalSizeBytes = maxOriginalSizeMb * 1024 * 1024;
-
-  if (file.size > maxOriginalSizeBytes) {
-    throw new Error(`Please upload an image smaller than ${maxOriginalSizeMb}MB.`);
   }
 
   const imageBitmap = await createImageBitmap(file);
@@ -228,6 +156,7 @@ async function compressImageFile(file: File): Promise<File> {
     type: "image/jpeg"
   });
 }
+
 type Concept = {
   id: string;
   imageUrl: string;
@@ -240,6 +169,7 @@ export default function Home() {
 
   const [photo, setPhoto] = useState<File | null>(null);
   const [isCompressing, setIsCompressing] = useState(false);
+
   const [roomType, setRoomType] = useState("Kitchen");
   const [selectedStyle, setSelectedStyle] = useState("Hamptons");
   const [customStyle, setCustomStyle] = useState("");
@@ -266,38 +196,39 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
 
   async function handlePhotoUpload(file: File | null) {
-  if (!file) {
-    setPhoto(null);
-    return;
+    if (!file) {
+      setPhoto(null);
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Please upload a JPEG, JPG or PNG image.");
+      setPhoto(null);
+      return;
+    }
+
+    setIsCompressing(true);
+
+    try {
+      const compressedFile = await compressImageFile(file);
+      setPhoto(compressedFile);
+    } catch (error) {
+      console.error(error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Could not process this image. Please try another photo.";
+
+      alert(message);
+      setPhoto(null);
+    } finally {
+      setIsCompressing(false);
+    }
   }
 
-  const allowedTypes = ["image/jpeg", "image/png"];
-
-  if (!allowedTypes.includes(file.type)) {
-    alert("Please upload a JPEG, JPG or PNG image.");
-    setPhoto(null);
-    return;
-  }
-
-  setIsCompressing(true);
-
-  try {
-    const compressedFile = await compressImageFile(file);
-    setPhoto(compressedFile);
-  } catch (error) {
-    console.error(error);
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Could not process this image. Please try another photo.";
-
-    alert(message);
-    setPhoto(null);
-  } finally {
-    setIsCompressing(false);
-  }
-}
   function toggleValue(
     value: string,
     list: string[],
@@ -309,7 +240,6 @@ export default function Home() {
       setter([...list, value]);
     }
   }
-
 
   async function generateConcepts() {
     if (!photo) {
@@ -352,9 +282,13 @@ export default function Home() {
       setStep(5);
     } catch (error) {
       console.error(error);
-      alert(
-        "Sorry, we could not generate concepts from this image. Please try a clearer, brighter photo or submit an enquiry manually."
-      );
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Sorry, we could not generate concepts from this image.";
+
+      alert(message);
     } finally {
       setIsGenerating(false);
     }
@@ -420,7 +354,13 @@ export default function Home() {
       setStep(7);
     } catch (error) {
       console.error(error);
-      alert("Sorry, we could not submit your enquiry. Please try again.");
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Sorry, we could not submit your enquiry. Please try again.";
+
+      alert(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -450,15 +390,13 @@ export default function Home() {
   return (
     <main className="container">
       <header className="hero">
-  <h1>AI Cabinetry Visualiser</h1>
-  <p>
-    Upload a photo of your kitchen, laundry, wardrobe or living area and
-    receive AI-generated cabinetry concepts.
-  </p>
-  <p className="muted">
-    Version: image compression active v1
-  </p>
-</header>
+        <h1>AI Cabinetry Visualiser</h1>
+        <p>
+          Upload a photo of your kitchen, laundry, wardrobe or living area and
+          receive AI-generated cabinetry concepts.
+        </p>
+        <p className="muted">Version: image compression active v1</p>
+      </header>
 
       <section className="card">
         <div className="steps">
@@ -495,27 +433,29 @@ export default function Home() {
             <label className="field">
               Upload photo
               <input
-  type="file"
-  accept="image/jpeg,image/png"
-  onChange={(e) => {
-    void handlePhotoUpload(e.target.files?.[0] || null);
-  }}
-/>
+                type="file"
+                accept="image/jpeg,image/png"
+                onChange={(e) => {
+                  void handlePhotoUpload(e.target.files?.[0] || null);
+                }}
+              />
             </label>
 
             {isCompressing && (
-  <p className="muted">Optimising image for upload...</p>
-)}
+              <p className="muted">
+                Optimising and compressing image for upload...
+              </p>
+            )}
 
-{isCompressing && (
-  <p className="muted">Optimising image for upload...</p>
-)}
-
-{photo && !isCompressing && (
-  <p className="success">
-    Selected: {photo.name} ({(photo.size / 1024 / 1024).toFixed(2)}MB)
-  </p>
-)}
+            {photo && !isCompressing && (
+              <div className="notice">
+                <strong>Image ready for upload:</strong>
+                <br />
+                {photo.name}
+                <br />
+                Final upload size: {(photo.size / 1024 / 1024).toFixed(2)}MB
+              </div>
+            )}
 
             <div className="notice">
               Your uploaded photo and generated concept images will be stored
@@ -525,12 +465,12 @@ export default function Home() {
             </div>
 
             <button
-  className="button"
-  onClick={() => setStep(2)}
-  disabled={!photo || isCompressing}
->
-  {isCompressing ? "Preparing image..." : "Continue"}
-</button>
+              className="button"
+              onClick={() => setStep(2)}
+              disabled={!photo || isCompressing}
+            >
+              {isCompressing ? "Preparing image..." : "Continue"}
+            </button>
           </>
         )}
 
@@ -544,7 +484,9 @@ export default function Home() {
                 <button
                   type="button"
                   key={style}
-                  className={selectedStyle === style ? "option selected" : "option"}
+                  className={
+                    selectedStyle === style ? "option selected" : "option"
+                  }
                   onClick={() => setSelectedStyle(style)}
                 >
                   {style}
@@ -614,7 +556,11 @@ export default function Home() {
                       : "layout"
                   }
                   onClick={() =>
-                    toggleValue(layout.label, selectedLayouts, setSelectedLayouts)
+                    toggleValue(
+                      layout.label,
+                      selectedLayouts,
+                      setSelectedLayouts
+                    )
                   }
                 >
                   <div className="layoutIcon">{layout.label.charAt(0)}</div>
@@ -661,7 +607,9 @@ export default function Home() {
                 onClick={generateConcepts}
                 disabled={isGenerating}
               >
-                {isGenerating ? "Generating concepts..." : "Generate AI Concepts"}
+                {isGenerating
+                  ? "Generating concepts..."
+                  : "Generate AI Concepts"}
               </button>
             </div>
 
