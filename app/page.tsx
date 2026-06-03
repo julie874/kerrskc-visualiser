@@ -367,12 +367,15 @@ export default function Home() {
   return (
     <main className="container">
       <header className="hero">
-        <h1>AI Cabinetry Visualiser</h1>
-        <p>
-          Upload a photo of your kitchen, laundry, wardrobe or living area and
-          receive AI-generated cabinetry concepts.
-        </p>
-      </header>
+  <h1>AI Cabinetry Visualiser</h1>
+  <p>
+    Upload a photo of your kitchen, laundry, wardrobe or living area and
+    receive AI-generated cabinetry concepts.
+  </p>
+  <p className="muted">
+    Version: image compression active v1
+  </p>
+</header>
 
       <section className="card">
         <div className="steps">
