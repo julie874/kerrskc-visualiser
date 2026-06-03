@@ -164,6 +164,7 @@ export default function Home() {
   const [step, setStep] = useState(1);
 
   const [photo, setPhoto] = useState<File | null>(null);
+  const [isCompressing, setIsCompressing] = useState(false);
   const [roomType, setRoomType] = useState("Kitchen");
   const [selectedStyle, setSelectedStyle] = useState("Hamptons");
   const [customStyle, setCustomStyle] = useState("");
