@@ -71,7 +71,7 @@ const budgetRanges = [
   "Not sure yet"
 ];
 
-const MAX_CONCEPT_CHANGES = 3;
+const MAX_CONCEPT_CHANGES = 2;
 
 const installExpectations = [
   "Within 3 months",
