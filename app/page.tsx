@@ -38,7 +38,7 @@ const finishes = [
 const layoutOptions = [
   {
     label: "U-shape",
-    description: "Cabinetry across three sides — great for maximising storage and bench space."
+    description: "Cabinetry across three sides - great for maximising storage and bench space."
   },
   {
     label: "L-shape",
@@ -70,6 +70,8 @@ const budgetRanges = [
   "$60,000+",
   "Not sure yet"
 ];
+
+const MAX_CONCEPT_CHANGES = 3;
 
 const installExpectations = [
   "Within 3 months",
@@ -194,6 +196,7 @@ export default function Home() {
   const [uploadedImageId, setUploadedImageId] = useState("");
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [selectedConceptId, setSelectedConceptId] = useState("");
+  const [conceptChangeCount, setConceptChangeCount] = useState(0);
 
   // Email gate state (collected at step 45, before generation)
   const [gateEmail, setGateEmail] = useState("");
@@ -327,6 +330,13 @@ export default function Home() {
       return;
     }
 
+    if (conceptChangeCount >= MAX_CONCEPT_CHANGES) {
+      alert(
+        `You can only request up to ${MAX_CONCEPT_CHANGES} concept changes.`
+      );
+      return;
+    }
+
     if (!changeRequest.trim()) {
       alert("Please describe the changes you would like.");
       return;
@@ -367,6 +377,7 @@ export default function Home() {
 
       setConcepts((current) => [...current, revisedConcept]);
       setSelectedConceptId(revisedConcept.imageUrl);
+      setConceptChangeCount((count) => count + 1);
       setChangeRequest("");
     } catch (error) {
       console.error(error);
@@ -514,7 +525,7 @@ export default function Home() {
             <h2>Start with your space</h2>
             <p className="muted">
               Any clear photo works. The wider the shot, the better your concept
-              will turn out — try to include the walls, floor, and the area where
+              will turn out - try to include the walls, floor, and the area where
               cabinetry will go. Accepted formats: JPEG, JPG or PNG.
             </p>
 
@@ -556,7 +567,7 @@ export default function Home() {
             )}
 
             <div className="notice">
-              Your photos are stored privately and securely for up to 90 days —
+              Your photos are stored privately and securely for up to 90 days -
               we'll never publish or use them without your permission.
             </div>
 
@@ -575,7 +586,7 @@ export default function Home() {
           <>
             <h2>What feel are you going for?</h2>
 
-            <h3>Pick the style that feels most like you — or the one you've always wanted.</h3>
+            <h3>Pick the style that feels most like you - or the one you've always wanted.</h3>
             <div className="grid">
               {styles.map((style) => (
                 <button
@@ -634,7 +645,7 @@ export default function Home() {
           <>
             <h2>How do you want your space to work?</h2>
             <p className="muted">
-              Choose a layout that suits how you use the space. Don't worry —
+              Choose a layout that suits how you use the space. Don't worry -
               your concepts will stay realistic to your room's actual proportions.
             </p>
 
@@ -817,7 +828,7 @@ export default function Home() {
                   <strong>Not quite right? Tell us what to change.</strong>
                   <br />
                   What would make this more you? Colours, materials, layout,
-                  style — anything goes.
+                  style - anything goes.
                 </div>
 
                 <label className="field">
@@ -829,10 +840,24 @@ export default function Home() {
                   />
                 </label>
 
+                <div className="notice">
+                  Concept changes used: {conceptChangeCount} / {MAX_CONCEPT_CHANGES}
+                </div>
+
+                {conceptChangeCount >= MAX_CONCEPT_CHANGES ? (
+                  <div className="notice">
+                    Your concept has reached the maximum number of allocated changes. Need more changes? Let us know in the enquiry form.
+                  </div>
+                ) : null}
+
                 <button
                   className="button full"
                   onClick={updateSelectedConcept}
-                  disabled={isUpdatingConcept || !selectedConceptId}
+                  disabled={
+                    isUpdatingConcept ||
+                    !selectedConceptId ||
+                    conceptChangeCount >= MAX_CONCEPT_CHANGES
+                  }
                 >
                   {isUpdatingConcept
                     ? "Updating your concept..."
@@ -861,8 +886,8 @@ export default function Home() {
           <>
             <h2>Like what you see? Let's talk.</h2>
             <p className="muted">
-              Send us your details and Gavin will be in touch to talk through
-              your project — no pressure, no obligation.
+              Send us your details and Kate or Julie will be in touch to talk through
+              your project - no pressure, no obligation.
             </p>
 
             <label className="field">
@@ -923,7 +948,7 @@ export default function Home() {
             </label>
 
             <label className="field">
-              Anything else?
+              Have additional changes or anything else to add? List them here and we'll take care of the rest.
               <textarea
                 value={customerNotes}
                 onChange={(e) => setCustomerNotes(e.target.value)}
@@ -933,7 +958,7 @@ export default function Home() {
 
             <div className="notice">
               Your selected concept, uploaded image and project details will be
-              sent to the team at Kerr's Kitchens & Cabinets. Images are kept
+              sent to the team at Kerr's Kitchens and Cabinets. Images are kept
               securely for up to 90 days.
             </div>
 
