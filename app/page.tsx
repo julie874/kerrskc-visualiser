@@ -180,6 +180,8 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [analysisText, setAnalysisText] = useState("");
   const [concepts, setConcepts] = useState<Concept[]>([]);
+  const [changeRequest, setChangeRequest] = useState("");
+  const [isUpdatingConcept, setIsUpdatingConcept] = useState(false);
   const [uploadedImageId, setUploadedImageId] = useState("");
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [selectedConceptId, setSelectedConceptId] = useState("");
@@ -275,9 +277,7 @@ export default function Home() {
       setUploadedImageId(data.uploadedImageId);
       setUploadedImageUrl(data.uploadedImageUrl);
 
-      if (data.concepts?.[0]) {
-        setSelectedConceptId(data.concepts[0].imageUrl);
-      }
+      setSelectedConceptId("");
 
       setStep(5);
     } catch (error) {
@@ -291,7 +291,66 @@ export default function Home() {
       alert(message);
     } finally {
       setIsGenerating(false);
+    } async function updateSelectedConcept() {
+  if (!selectedConceptId) {
+    alert("Please select a concept to update.");
+    return;
+  }
+
+  if (!changeRequest.trim()) {
+    alert("Please describe the changes you would like.");
+    return;
+  }
+
+  setIsUpdatingConcept(true);
+
+  try {
+    const res = await fetch("/api/refine-concept", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        selectedConceptUrl: selectedConceptId,
+        changeRequest,
+        roomType,
+        selectedStyle,
+        customStyle,
+        selectedFinishes,
+        selectedLayouts,
+        optionalDetails
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Could not update concept.");
     }
+
+    const revisedConcept: Concept = {
+      id: data.concept.id,
+      imageUrl: data.concept.imageUrl,
+      caption: data.concept.caption,
+      aiNotes: data.concept.aiNotes
+    };
+
+    setConcepts((current) => [...current, revisedConcept]);
+    setSelectedConceptId(revisedConcept.imageUrl);
+    setChangeRequest("");
+  } catch (error) {
+    console.error(error);
+
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Sorry, we could not update the selected concept.";
+
+    alert(message);
+  } finally {
+    setIsUpdatingConcept(false);
+  }
+}
   }
 
   async function submitEnquiry() {
@@ -629,7 +688,12 @@ export default function Home() {
 
         {step === 5 && (
           <>
-            <h2>Your AI concept images</h2>
+            <h2>Choose your preferred AI concept</h2>
+            <p className="muted"> 
+              Review the two AI-generated concepts below and select the one you would like
+              to continue with. You can request changes after choosing your favourite.
+              </p>
+  
 
             {analysisText && (
               <div className="notice">
@@ -674,12 +738,37 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            <div className="notice">
+  <strong>Want to adjust the selected concept?</strong>
+  <br />
+  Describe what you would like changed, such as colours, materials, lighting,
+  layout details or overall style.
+</div>
+
+<label className="field">
+  Describe the changes you would like
+  <textarea
+    value={changeRequest}
+    onChange={(e) => setChangeRequest(e.target.value)}
+    placeholder="Example: Make the cabinetry warmer, change the benchtop to stone, add brass handles and keep the same layout."
+  />
+</label>
+
+<button
+  className="button full"
+  onClick={updateSelectedConcept}
+  disabled={isUpdatingConcept || !selectedConceptId}
+>
+  {isUpdatingConcept ? "Updating selected concept..." : "Update Selected Concept"}
+</button>
 
             <div className="actions">
               <button className="secondary" onClick={() => setStep(4)}>
                 Back
               </button>
               <button className="button" onClick={() => setStep(6)}>
+                disabled={!selectedConceptId}
+>
                 Continue to Enquiry
               </button>
             </div>

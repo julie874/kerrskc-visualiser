@@ -143,7 +143,7 @@ Generate a high-quality inspirational cabinetry visual suitable for a cabinet ma
 
     const concepts = [];
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 2; i++) {
       const imageFile = new File([buffer], safeName, { type: photo.type });
 
       const imageResult = await openai.images.edit({
@@ -152,7 +152,8 @@ Generate a high-quality inspirational cabinetry visual suitable for a cabinet ma
         prompt: `${generationPrompt}
 
 Variation ${i + 1}:
-Create a different but still realistic take on the same selected style and finishes.`,
+Create a diffCreate a distinct but still realistic cabinetry concept using the same selected style, finishes and room layout. If this is Variation 1, create a balanced and practical interpretation.
+If this is Variation 2, create a noticeably different alternative in cabinetry emphasis, finish balance, colour use or styling details while keeping the room recognisable.`,
         size: "1024x1024"
       });
 

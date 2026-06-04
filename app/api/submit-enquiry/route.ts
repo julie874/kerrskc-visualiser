@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     const customer = payload.customer_details || {};
     const project = payload.project_details || {};
-
+    latest_change_request: changeRequest,
     const selectedConceptUrl = payload.selected_concept_id || "";
     const uploadedImageUrl = payload.uploaded_image_url || "";
     const generatedConcepts: string[] = payload.generated_concept_ids || [];
