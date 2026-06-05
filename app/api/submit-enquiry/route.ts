@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 function escapeHtml(value: unknown) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -92,16 +95,29 @@ export async function POST(req: NextRequest) {
       )}</pre>
     `;
 
-    await resend.emails.send({
+    console.log("Sending enquiry email to", toEmail, "from", fromEmail);
+
+    const sendResponse = await resend.emails.send({
       from: fromEmail,
       to: toEmail,
       subject,
       html
     });
 
-    return NextResponse.json({
-      success: true
+    await resend.emails.send({
+      from: fromEmail,
+      to: "d7e649@inbox.servicem8.com",
+      subject,
+      html
     });
+
+    console.log("Resend send response:", sendResponse);
+
+    if (process.env.RESEND_DEBUG === "true") {
+      return NextResponse.json({ success: true, resendResponse: sendResponse });
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Submit enquiry error:", error);
 

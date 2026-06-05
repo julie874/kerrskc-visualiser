@@ -1,13 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { put } from "@vercel/blob";
+import { Resend } from "resend";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function escapeHtml(value: unknown) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 export async function POST(req: NextRequest) {
-  try {     
+  try {
     const openAiApiKey = process.env.OPENAI_API_KEY;
+    const resendApiKey = process.env.RESEND_API_KEY || "";
+    const fromEmail = process.env.ENQUIRY_FROM_EMAIL || "enquiries@kerrskc.com.au";
+    const bccEmail = process.env.ENQUIRY_BCC_EMAIL || "enquiries@kerrskc.com.au";
 
     if (!openAiApiKey) {
       return NextResponse.json(
@@ -35,6 +48,46 @@ export async function POST(req: NextRequest) {
     );
 
     const optionalDetails = String(formData.get("optionalDetails") || "");
+    const gateEmail = String(formData.get("gateEmail") || "").trim();
+    const gateName = String(formData.get("gateName") || "").trim();
+
+    if (gateEmail) {
+      if (!resendApiKey) {
+        return NextResponse.json(
+          { error: "Resend API key missing. Cannot send welcome email." },
+          { status: 500 }
+        );
+      }
+
+      const resend = new Resend(resendApiKey);
+      const welcomePackUrl =
+        "https://drive.google.com/file/d/1qnKctaYYlBJa69zLamj7nBrDp6DnbzQC/view?usp=drive_link";
+      const welcomeHtml = `
+        <h1>Welcome to Kerr's Kitchens & Cabinets</h1>
+        <p>Hi ${gateName ? escapeHtml(gateName) : "there"},</p>
+        <p>You've made the first step to designing your new space. Click the link below to view information on Getting Started with Kerr's Kitchens and Cabinets.</p>
+        <p>Thanks for taking the next step with us. Your personalised cabinetry concept is on its way.</p>
+        <p>
+          In the meantime, please download our welcome pack here:
+          <br />
+          <a href="${escapeHtml(welcomePackUrl)}" target="_blank" rel="noreferrer noopener">
+            Download the Kerr's Kitchens & Cabinets Welcome Pack
+          </a>
+        </p>
+        <p>If you have any questions, reply to this email and we'll get back to you shortly.</p>
+        <p>Warm regards,<br />The Kerr's Kitchens & Cabinets team</p>
+      `;
+        const welcomeText = `${gateName ? gateName : "there"},\n\nYou've made the first step to designing your new space. View our Getting Started information here:\n\n${welcomePackUrl}\n\nThanks for taking the next step with us. Your personalised cabinetry concept is on its way.\n\nWarm regards,\nKerr's Kitchens & Cabinets`;
+
+      await resend.emails.send({
+        from: fromEmail,
+        to: gateEmail,
+        bcc: [bccEmail],
+        subject: "Thank you for starting your design & Welcome Pack",
+        html: welcomeHtml,
+        text: welcomeText
+      });
+    }
 
     if (!photo) {
       return NextResponse.json(

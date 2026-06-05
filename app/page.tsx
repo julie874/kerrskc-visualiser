@@ -7,16 +7,18 @@ const roomTypes = [
   "Laundry",
   "Wardrobe",
   "Living Area",
+  "Office",
+  "Alfresco",
   "Other Cabinetry Area"
 ];
 
 const styles = [
+  "warm Minimalism",
   "Modern",
   "Traditional",
   "Hamptons",
   "Coastal",
   "Contemporary",
-  "Warm Minimalism",
   "Scandi",
   "Custom Style / Custom Colour"
 ];
@@ -741,8 +743,8 @@ export default function Home() {
             </label>
 
             <div className="notice">
-              Your details are kept private. We won't pass them on or add you to
-              a mailing list without your permission.
+              Your details are kept private. We won't pass them on.
+              By submitting, you will receive an email from us containing our Welcome Pack.
             </div>
 
             <div className="actions">
