@@ -114,6 +114,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 3. Send concept confirmation to customer
+    console.log("Sending concept confirmation to customer:", customer.email);
     await resend.emails.send({
       from: fromEmail,
       to: customer.email,

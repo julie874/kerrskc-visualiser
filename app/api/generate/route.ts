@@ -82,8 +82,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: fromEmail,
         to: gateEmail,
-        bcc: [bccEmail],
-        subject: "Thank you for starting your design & Welcome Pack",
+        subject: "Thank you for starting your design / Welcome Pack",
         html: welcomeHtml,
         text: welcomeText
       });
