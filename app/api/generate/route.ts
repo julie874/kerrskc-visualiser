@@ -65,10 +65,8 @@ export async function POST(req: NextRequest) {
       const welcomeHtml = `
         <h1>Welcome to Kerr's Kitchens & Cabinets</h1>
         <p>Hi ${gateName ? escapeHtml(gateName) : "there"},</p>
-        <p>You've made the first step to designing your new space. Click the link below to view information on Getting Started with Kerr's Kitchens and Cabinets.</p>
-        <p>Thanks for taking the next step with us. Your personalised cabinetry concept is on its way.</p>
+        <p>You've made the first step to designing your new space. Click the link below to view information on Getting Started with Kerr's Kitchens and Cabinets</p>
         <p>
-          In the meantime, please download our welcome pack here:
           <br />
           <a href="${escapeHtml(welcomePackUrl)}" target="_blank" rel="noreferrer noopener">
             Download the Kerr's Kitchens & Cabinets Welcome Pack
