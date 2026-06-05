@@ -45,10 +45,13 @@ export async function GET(req: NextRequest) {
       text
     });
 
-    return NextResponse.json({ success: true, response });
+    return NextResponse.json({ 
+      success: true, 
+      response,
+      keyPreview: resendApiKey?.substring(0, 10)
+    });
   } catch (error) {
     console.error("Test email error:", error);
     return NextResponse.json({ error: "Could not send test email." }, { status: 500 });
   }
 }
-
