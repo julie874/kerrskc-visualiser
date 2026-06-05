@@ -97,6 +97,7 @@ export async function POST(req: NextRequest) {
 
     console.log("Sending enquiry email to", toEmail, "from", fromEmail);
 
+    // 1. Send enquiry to internal team
     const sendResponse = await resend.emails.send({
       from: fromEmail,
       to: toEmail,
@@ -104,11 +105,42 @@ export async function POST(req: NextRequest) {
       html
     });
 
+    // 2. Forward to ServiceM8
     await resend.emails.send({
       from: fromEmail,
       to: "d7e649@inbox.servicem8.com",
       subject,
       html
+    });
+
+    // 3. Send concept confirmation to customer
+    await resend.emails.send({
+      from: fromEmail,
+      to: customer.email,
+      subject: "Your Kerr's Kitchens & Cabinets concept is ready",
+      html: `
+        <h1>Your cabinetry concept</h1>
+        <p>Hi ${escapeHtml(customer.name)},</p>
+        <p>Thanks for submitting your enquiry. Here's a summary of what you put together, along with your selected concept.</p>
+
+        <h2>Your selected concept</h2>
+        <img src="${escapeHtml(selectedConceptUrl)}" alt="Your selected cabinetry concept" style="max-width:100%; border-radius:8px;" />
+        <p><a href="${escapeHtml(selectedConceptUrl)}">View or download your concept</a></p>
+
+        <h2>Your project details</h2>
+        <p><strong>Room type:</strong> ${escapeHtml(project.room_type)}</p>
+        <p><strong>Style:</strong> ${escapeHtml(project.selected_style)}${project.custom_style ? ` — ${escapeHtml(project.custom_style)}` : ""}</p>
+        <p><strong>Finishes:</strong> ${escapeHtml((project.selected_finishes || []).join(", ") || "None selected")}</p>
+        <p><strong>Layout:</strong> ${escapeHtml((project.layout_preferences || []).join(", ") || "None selected")}</p>
+        <p><strong>Budget range:</strong> ${escapeHtml(project.budget_range)}</p>
+        <p><strong>Installation timeframe:</strong> ${escapeHtml(project.installation_expectation)}</p>
+
+        <h2>What happens next?</h2>
+        <p>Kate or Julie will be in touch soon to talk through your project — no pressure, no obligation.</p>
+        <p>If you have any questions in the meantime, reply to this email and we'll get back to you shortly.</p>
+
+        <p>Warm regards,<br />The Kerr's Kitchens & Cabinets team</p>
+      `
     });
 
     console.log("Resend send response:", sendResponse);

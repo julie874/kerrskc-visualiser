@@ -13,7 +13,7 @@ const roomTypes = [
 ];
 
 const styles = [
-  "warm Minimalism",
+  "Warm Minimalism",
   "Modern",
   "Traditional",
   "Hamptons",
@@ -506,7 +506,7 @@ export default function Home() {
         <h1>Visualise Your Space Before You Commit</h1>
         <p>
           Not sure what style is right for your space? Upload a photo and we'll
-          show you what's possible — before you spend a cent.
+          show you what's possible - before you spend a cent.
         </p>
         <p className="muted">Version: image compression active v1</p>
       </header>
@@ -689,7 +689,7 @@ export default function Home() {
             <h2>Anything else we should know about your space?</h2>
             <p className="muted">
               The more you tell us, the more tailored your concepts will be.
-              Measurements, things you love, things you'd like to change — anything
+              Measurements, things you love, things you'd like to change - anything
               helps.
             </p>
 
@@ -716,7 +716,7 @@ export default function Home() {
         {/* ── STEP 4.5: Email gate ── */}
         {step === 45 && (
           <>
-            <h2>Almost there — where should we send your concepts?</h2>
+            <h2>Almost there - where should we send your concepts?</h2>
             <p className="muted">
               Pop in your name and email and we'll get started on your concepts
               right away. We'll also use these details if you'd like to follow up
@@ -744,7 +744,8 @@ export default function Home() {
 
             <div className="notice">
               Your details are kept private. We won't pass them on.
-              By submitting, you will receive an email from us containing our Welcome Pack.
+              By submitting, you will receive an email from us containing our Welcome Pack. 
+              If you submit an enquiry, your concepts are sent to you.
             </div>
 
             <div className="actions">
