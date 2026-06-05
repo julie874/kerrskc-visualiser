@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   try {
-    const resendApiKey = "re_UZm7VF9y_7pzZMjzHBr4GWmFpKoJYanGR";
+    const resendApiKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.ENQUIRY_FROM_EMAIL || "enquiries@kerrskc.com.au";
     const bccEmail = process.env.ENQUIRY_BCC_EMAIL || "enquiries@kerrskc.com.au";
     const defaultTo = process.env.TEST_EMAIL_TO || process.env.ENQUIRY_TO_EMAIL || "";
